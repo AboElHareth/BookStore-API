@@ -17,28 +17,49 @@ namespace BookStore.Controllers
             _service = service;
         }
         [HttpGet("/get-all-authors")]
-        public IActionResult GetAllAuthors()
+        public IActionResult GetAllAuthors(int pageindex = 1)
         {
-            var authors = _service.GetAllAuthors();
+            var authors = _service.GetAllAuthors(pageindex);
             return Ok(authors);
         }
         [HttpPost("/add-new-author")]
         public IActionResult AddNewAuthor([FromForm] AuthorVM author)
         {
-            var newauthor = _service.AddNewAuthor(author);
-            return Ok(newauthor);
+            try
+            {
+                var newauthor = _service.AddNewAuthor(author);
+                return Ok(newauthor);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet("/get-author-byid")]
         public IActionResult GetAuthorById(int id)
         {
-            var author = _service.GetAuthorById(id);
-            return Ok(author);
+            try
+            {
+                var author = _service.GetAuthorById(id);
+                return Ok(author);
+            }
+            catch (Exception ex) 
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpGet("/get-author-byid-with-books")]
         public IActionResult GetAuthorByIdWithBooks(int id)
         {
-            var author = _service.GetAuthorByIdWithBooks(id);
-            return Ok(author);
+            try
+            {
+                var author = _service.GetAuthorByIdWithBooks(id);
+                return Ok(author);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpGet("/get-author-byname")]
         public IActionResult GetAuthorByName(string title)
@@ -49,14 +70,28 @@ namespace BookStore.Controllers
         [HttpDelete("/delete-author")]
         public IActionResult DeleteAuthor(int id)
         {
-            _service.DeleteAuthor(id);
-            return Ok("The Author is Deleted");
+            try
+            {
+                _service.DeleteAuthor(id);
+                return Ok("The Author is Deleted");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpPut("/Update-author")]
         public IActionResult UpdateAuthor([FromForm] AuthorVM author, int id)
         {
-            _service.UpdateAuthor(author, id);
-            return Ok(author);
+            try
+            {
+                _service.UpdateAuthor(author, id);
+                return Ok(author);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

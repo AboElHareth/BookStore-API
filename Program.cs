@@ -1,5 +1,7 @@
 using BookStore.Data;
+using BookStore.Model;
 using BookStore.Service;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -12,6 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("conString")));
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>();
 builder.Services.AddScoped<BooksService>();
 builder.Services.AddScoped<AuthorsService>();
 builder.Services.AddScoped<PublishersService>();

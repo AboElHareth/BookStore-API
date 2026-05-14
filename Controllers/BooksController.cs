@@ -17,9 +17,9 @@ namespace BookStore.Controllers
             _service = service;
         }
         [HttpGet("/get-all-books")]
-        public IActionResult GetAllBooks()
+        public IActionResult GetAllBooks(string sort = "", string search = "", int pageindex = 1)
         {
-            var books = _service.GetAllBooks();
+            var books = _service.GetAllBooks(sort, search, pageindex);
             return Ok(books);
         }
         [HttpGet("/get-all-books-with-publisher")]
@@ -37,14 +37,28 @@ namespace BookStore.Controllers
         [HttpGet("/get-book-byid")]
         public IActionResult GetBookById(int id)
         {
-            var book = _service.GetBookById(id);
-            return Ok(book);
+            try
+            {
+                var book = _service.GetBookById(id);
+                return Ok(book);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpGet("/get-book-byid-with-publisher")]
         public IActionResult GetBookByIdWithPublisher(int id)
         {
-            var book = _service.GetBookByIdWithPublisher(id);
-            return Ok(book);
+            try
+            {
+                var book = _service.GetBookByIdWithPublisher(id);
+                return Ok(book);
+            }
+            catch (Exception ex) 
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpGet("/get-book-byname")]
         public IActionResult GetBooksByName(string title)
@@ -61,14 +75,28 @@ namespace BookStore.Controllers
         [HttpDelete("/delete-book")]
         public IActionResult DeleteBook(int id)
         {
-            _service.DeleteBook(id);
-            return Ok("The Book is Deleted");
+            try
+            {
+                _service.DeleteBook(id);
+                return Ok("The Book is Deleted");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpPut("/Update-book")]
         public IActionResult UpdateBook([FromForm]BookVM book, int id)
         {
-            _service.UpdateBook(book, id);
-            return Ok(book);
+            try
+            {
+                _service.UpdateBook(book, id);
+                return Ok(book);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

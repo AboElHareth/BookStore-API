@@ -1,4 +1,6 @@
 ﻿using BookStore.Data;
+using BookStore.Data.Paginated;
+using BookStore.Migrations;
 using BookStore.Model;
 using BookStore.ViewModel;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +14,35 @@ namespace BookStore.Service
         {
             _context = context;
         }
-        public List<Book> GetAllBooks()
+        public List<Book> GetAllBooks(string sort, string search, int pageindex)
         {
-            var books = _context.Books.ToList();
+            var books = _context.Books
+                .Where(x => x.Title.Contains(search) || x.Description.Contains(search)).ToList();
+            if (!string.IsNullOrEmpty(search))
+            {
+                switch (sort)
+                {
+                    case "name":
+                        books = books.OrderBy(x => x.Title).ToList();
+                        break;
+                    case "name-desc":
+                        books = books.OrderByDescending(x => x.Title).ToList();
+                        break;
+                    case "price":
+                        books = books.OrderBy(x => x.Price).ToList();
+                        break;
+                    case "price-desc":
+                        books = books.OrderByDescending(x => x.Price).ToList();
+                        break;
+                    case "rating":
+                        books = books.OrderBy(x => x.Rate).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            int pagesize = 2;
+            books = PaginatedList<Book>.Create(books, pageindex, pagesize);
             return books;
         }
         public void AddNewBook(BookVM book)
@@ -49,7 +77,10 @@ namespace BookStore.Service
         public Book GetBookById(int id)
         {
             var book = _context.Books.Find(id);
-            return book;
+            if (book != null)
+                return book;
+            else
+                throw new Exception("This Book Not Found");
         }
         public BookWithPublisherVM GetBookByIdWithPublisher(int id)
         {
@@ -63,7 +94,10 @@ namespace BookStore.Service
                     AuthorsName = book.bookauthors.Select(x => x.author.Name).ToList()
                 })
                 .FirstOrDefault();
-            return exbook;
+            if (exbook != null)
+                return exbook;
+            else
+                throw new Exception("This Book Not Found");
         }
         public List<BookWithPublisherVM> GetAllBooksWithPublisher()
         {
@@ -112,6 +146,8 @@ namespace BookStore.Service
         public void DeleteBook(int id)
         {
             var book = _context.Books.Find(id);
+            if (book == null)
+                throw new Exception("This Book Not Found");
             _context.Books.Remove(book);
             _context.SaveChanges();
             var exbookauthor = _context.BookAuthors.Where(x => x.BookId == id).ToList();
@@ -121,6 +157,8 @@ namespace BookStore.Service
         public void UpdateBook(BookVM book, int id)
         {
             var exbook = _context.Books.Find(id);
+            if (exbook == null)
+                throw new Exception("This Book Not Found");
             exbook.Title = book.Title;
             exbook.Price = book.Price;
             exbook.Description = book.Description;

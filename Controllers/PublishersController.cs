@@ -17,28 +17,49 @@ namespace BookStore.Controllers
             _service = service;
         }
         [HttpGet("/get-all-publishers")]
-        public IActionResult GetAllPublishers()
+        public IActionResult GetAllPublishers(int pageindex = 1)
         {
-            var publishers = _service.GetAllPublishers();
+            var publishers = _service.GetAllPublishers(pageindex);
             return Ok(publishers);
         }
         [HttpPost("/add-new-publisher")]
         public IActionResult AddNewPublisher([FromForm] PublisherVM publisher)
         {
-            var newpublisher = _service.AddNewPublisher(publisher);
-            return Ok(newpublisher);
+            try
+            {
+                var newpublisher = _service.AddNewPublisher(publisher);
+                return Ok(newpublisher);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet("/get-publisher-byid")]
         public IActionResult GetPublisherById(int id)
         {
-            var publisher = _service.GetPublisherById(id);
-            return Ok(publisher);
+            try
+            {
+                var publisher = _service.GetPublisherById(id);
+                return Ok(publisher);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpGet("/get-publisher-byid-with-books")]
         public IActionResult GetPublisherByIdWithBooks(int id)
         {
-            var publisher = _service.GetPublisherByIdWithBooks(id);
-            return Ok(publisher);
+            try
+            {
+                var publisher = _service.GetPublisherByIdWithBooks(id);
+                return Ok(publisher);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpGet("/get-publisher-byname")]
         public IActionResult GetPublisherByName(string title)
@@ -49,14 +70,28 @@ namespace BookStore.Controllers
         [HttpDelete("/delete-publisher")]
         public IActionResult DeletePublisher(int id)
         {
-            _service.DeletePublisher(id);
-            return Ok("The Publisher is Deleted");
+            try
+            {
+                _service.DeletePublisher(id);
+                return Ok("The Publisher is Deleted");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         [HttpPut("/Update-publisher")]
         public IActionResult UpdatePublisher([FromForm] PublisherVM publisher, int id)
         {
-            _service.UpdatePublisher(publisher, id);
-            return Ok(publisher);
+            try
+            {
+                _service.UpdatePublisher(publisher, id);
+                return Ok(publisher);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
